@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Auth{
+  authId  String @id @default(cuid())
+  email String @unique
+  otp String
+  expiresAt DateTime @default(now())
+}
+
+model User {
+  userId           String    @id @default(cuid())
+  username         String
+  email            String    @unique
+  password         String
+  image            String    @default("https://github.com/shadcn.png")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  token            String?
+  friends          Friend[]  @relation("Friend")
+  associates       Friend[]  @relation("Associate")
+  outgoingMessages Message[] @relation("MessageSender")
+  incomingMessages Message[] @relation("MessageReceiver")
+  sentRequests     Request[] @relation("RequestSender")
+  receivedRequests Request[] @relation("RequestReceiver")
+}
+
+model Request {
+  requestId  String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  sender     User     @relation("RequestSender", fields: [senderId], references: [userId])
+  receiver   User     @relation("RequestReceiver", fields: [receiverId], references: [userId])
+  createdAt  DateTime @default(now())
+  requestStatus RequestStatus @default(Sent)
+   @@unique([senderId, receiverId])
+}
+
+enum RequestStatus {
+  Sent
+  Accepted
+  Rejected
+}
+
+model Friend {
+  friendId  String    @id @default(cuid())
+  userId1   String
+  userId2   String
+  user1     User      @relation("Associate", fields: [userId1], references: [userId])
+  user2     User      @relation("Friend", fields: [userId2], references: [userId])
+  createdAt DateTime  @default(now())
+  messages  Message[] @relation("Friend") // Added cascade delete
+  @@unique([userId1, userId2])
+}
+
+model Message {
+  messageId       String      @id
+  senderId        String
+  receiverId      String
+  sender          User        @relation("MessageSender", fields: [senderId], references: [userId])
+  receiver        User        @relation("MessageReceiver", fields: [receiverId], references: [userId])
+  friendId        String
+  friend          Friend      @relation("Friend", fields: [friendId], references: [friendId], onDelete: Cascade) // Ensure cascade delete here too
+  message         String
+  messageType     MessageType 
+  createdAt       DateTime    @default(now())
+  messageStatus   MessageStatus
+  senderDeleted   Boolean     @default(false)
+  receiverDeleted Boolean     @default(false)
+}
+
+enum MessageType {
+  text
+  image
+  video
+  audio
+}
+
+enum MessageStatus {
+  Sent
+  Delivered
+  Seen
+}

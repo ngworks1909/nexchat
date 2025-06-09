@@ -8,9 +8,21 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
     "prettier": "^3.2.5",
+    "prisma": "^6.0.1",
     "turbo": "^2.3.3",
     "typescript": "5.5.4"
+  },
+  "turbo": {
+    "globalEnv": [
+      "NEXTAUTH_URL",
+      "NEXTAUTH_SECRET",
+      "REDIS_URL",
+      "QUEUE_REDIS_URL",
+      "RATE_LIMIT_REDIS_URL"
+    ]
   },
   "engines": {
     "node": ">=18"
@@ -19,5 +31,25 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@prisma/client": "^6.0.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/nodemailer": "^6.4.17",
+    "@types/ws": "^8.5.13",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "emoji-picker-react": "^4.12.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^6.9.16",
+    "rate-limiter-flexible": "^5.0.4",
+    "recoil": "^0.7.7",
+    "zod": "^3.24.1"
+  }
 }
